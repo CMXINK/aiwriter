@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dawn.aiwriter.mapper.ArticleMapper">
+
+    <resultMap type="com.dawn.aiwriter.entity.Article" id="ArticleResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="summary"    column="summary"    />
+        <result property="articleBody"    column="article_body"    />
+        <result property="wordNum"    column="word_num"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectArticle">
+        select id,title,summary,article_body,word_num,user_id,create_time,update_time from article
+    </sql>
+
+    <select id="selectArticleList" resultMap="ArticleResult">
+        <include refid="selectArticle"/>
+    </select>
+
+    <insert id="insertArticle">
+        insert into article(
+            title,
+            summary,
+            article_body,
+            word_num,
+            user_id,
+            create_time,
+            update_time
+                ) VALUES(
+            #{title},
+            #{summary},
+            #{articleBody},
+            #{wordNum},
+            #{userId},
+            #{createTime},
+            #{updateTime}
+                    )
+    </insert>
+
+    <update id="updateArticle">
+        update article set
+            title = #{title},
+            summary = #{summary},
+            article_body = #{articleBody},
+            word_num = #{wordNum},
+            user_id = #{userId},
+            create_time = #{createTime},
+            update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArticle" parameterType="Long">
+        delete from article where id = #{id}
+    </delete>
+</mapper>

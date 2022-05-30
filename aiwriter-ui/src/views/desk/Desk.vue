@@ -7,7 +7,7 @@
             drag
             action="https://jsonplaceholder.typicode.com/posts/"
         >
-          <router-link to="/home">
+          <router-link to="/dashboard">
             <img src="../../assets/img/upload.png" alt="">
             <div style="height: 35px; font-size: 16px;">
               <a style="color: rgb(36, 112, 255); font-weight: 600;">新建文档</a>
@@ -22,8 +22,8 @@
     <el-col :span="4" style="margin-top:20px;">
       <el-card shadow="hover">
         <div class="successShow" style="">
-          <div title="范文——赵州桥" class="textDescriptionTitle">
-            范文——赵州桥
+          <div title="范文——三国演义" class="textDescriptionTitle">
+            范文——三国演义
           </div>
           <div class="textDescription">
             <img src="../../assets/img/number.png" alt=""
@@ -55,7 +55,26 @@
 
 <script>
 export default {
-  name: "Desk"
+  name: "Desk",
+  data(){
+    return{
+      articles:[],
+    }
+  },
+  mounted() {
+    // this.getArticles()
+  },
+  methods:{
+  //获得文章的详细信息
+  //   getArticles(){
+  //     axios.get('/articles/list').then(
+  //         ({data})=>{
+  //           console.log("成功获取到数据",data);
+  //           this.articles = data;
+  //         }
+  //     )
+  //   }
+  }
 }
 </script>
 
@@ -98,8 +117,8 @@ export default {
   }
   .download{
     display:inline;
-    margin-left: 20%;
-    margin-right: 30%;
+    margin-left: 50px;
+    margin-right: 60px;
   }
   .delect{
     display:inline;

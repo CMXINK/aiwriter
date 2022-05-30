@@ -4,7 +4,7 @@
         <img src="../../assets/img/logo.svg" alt="">
       </div>
       <div class="desk" @click="deskClick">
-        <img v-if ="!isActive" src="../../assets/img/desk.png" alt="">
+        <img v-if ="isActive" src="../../assets/img/desk.png" alt="">
         <img v-else src="../../assets/img/desk_active.png" alt="">
         <div>写作台</div>
       </div>
