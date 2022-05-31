@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "username",
+      "type": "java.lang.String",
+      "description": "Description for username."
+    },
+    {
+      "name": "spring",
+      "type": "java.lang.String",
+      "description": "Description for spring."
+    }
+  ] }
