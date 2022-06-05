@@ -7,11 +7,14 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.0.1",
     "@wangeditor/editor": "^5.0.1",
     "@wangeditor/editor-for-vue": "^5.1.11",
+    "animate.css": "^4.1.1",
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
     "element-plus": "^2.2.2",
+    "less-loader": "^4.1.0",
     "vue": "^3.2.36",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
@@ -20,7 +23,8 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-plugin-vuex": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "webpack": "^5.72.1"
   },
   "browserslist": [
     "> 1%",

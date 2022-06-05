@@ -15,17 +15,19 @@
         </el-upload>
       </el-card>
     </el-col>
-    <el-col :span="4" style="margin-top: 20px">
+    <el-col :span="4" style="margin-top: 20px" v-for="(item, index) in articles" :key="index">
       <el-card shadow="hover">
         <div class="successShow" style="">
-          <div title="范文——三国演义" class="textDescriptionTitle">范文——三国演义</div>
+          <div :title="item.title" class="textDescriptionTitle">{{ item.title }}</div>
           <div class="textDescription">
             <img src="../../assets/img/number.png" alt="" style="vertical-align: middle; height: 16px; width: 16px; margin-right: 8px" />
-            <span>字数：393</span>
+            <span>字数：{{ item.fontNum }}</span>
           </div>
           <div class="textDescription">
             <img src="../../assets/img/time.png" alt="" style="vertical-align: middle; height: 16px; width: 16px; margin-right: 5px" />
-            <span>日期：<span class="uploadTime">2019-11-12</span> </span>
+            <span
+              >日期：<span class="uploadTime">{{ item.date }}</span>
+            </span>
           </div>
           <!--           下面的打印，下载，删除等等图标-->
           <div class="bottomButtons">
@@ -49,7 +51,33 @@ export default {
   name: 'Desk',
   data() {
     return {
-      articles: []
+      //  暂时没有API接口, 用list代替
+      articles: [
+        {
+          id: 1,
+          title: '范文——三国演义',
+          fontNum: 393,
+          date: '2019-11-12'
+        },
+        {
+          id: 2,
+          title: '范文——三国演义',
+          fontNum: 393,
+          date: '2019-11-12'
+        },
+        {
+          id: 3,
+          title: '范文——三国演义',
+          fontNum: 393,
+          date: '2019-11-12'
+        },
+        {
+          id: 4,
+          title: '范文——三国演义',
+          fontNum: 393,
+          date: '2019-11-12'
+        }
+      ]
     }
   },
   mounted() {
