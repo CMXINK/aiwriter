@@ -16,4 +16,6 @@ public interface ArticleMapper {
     Integer deleteArticle(Long id);
 
     Integer updateArticle(Article article);
+
+    Article selectArticleById(Long id);
 }

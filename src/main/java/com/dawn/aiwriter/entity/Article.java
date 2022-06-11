@@ -3,6 +3,7 @@ package com.dawn.aiwriter.entity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 文档实体类
@@ -15,13 +16,13 @@ public class Article {
     private static final long serialVersionUID = 1L;
 
     /**编号*/
-    private Long id;
+    private Long articleId;
 
     /**标题*/
-    private String title;
+    private List<Title> titles;
 
     /**摘要*/
-    private String summary;
+    private List<Summary> summarys;
 
     /**文章内容*/
     private String articleBody;

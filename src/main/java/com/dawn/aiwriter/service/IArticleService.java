@@ -2,6 +2,7 @@ package com.dawn.aiwriter.service;
 
 import com.dawn.aiwriter.entity.Article;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface IArticleService {
@@ -17,4 +18,13 @@ public interface IArticleService {
     Integer deleteArticle(Long id);
 
     Integer updateArticle(Article article);
+
+    Article selectArticleById(Long id);
+
+    /**
+     * 计算文章字数
+     * @param article
+     * @return 字数
+     */
+    Integer countWords(Article article);
 }

@@ -31,6 +31,13 @@ public class ArticleController{
         return list;
     }
 
+    @GetMapping(value = "/{id}")
+    public Article getArticleById(@PathVariable("id")Long id) {
+        Article result = articleService.selectArticleById(id);
+
+        return result;
+    }
+
     @PostMapping("/add")
     public int addArticle(Article article){
         Integer result = articleService.insertArticle(article);
