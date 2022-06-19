@@ -44,23 +44,19 @@
         <include refid="selectArticle"/>
     </select>
 
-    <select id="selectTitleById" resultMap="articleResult">
+    <select id="selectArticleById" resultMap="articleResult">
         <include refid="selectArticle"/>
         where a.article_id = #{id}
     </select>
 
     <insert id="insertArticle">
         insert into article(
-            title,
-            summary,
             article_body,
             word_num,
             user_id,
             create_time,
             update_time
                 ) VALUES(
-            #{title},
-            #{summary},
             #{articleBody},
             #{wordNum},
             #{userId},
@@ -71,17 +67,15 @@
 
     <update id="updateArticle">
         update article set
-            title = #{title},
-            summary = #{summary},
             article_body = #{articleBody},
             word_num = #{wordNum},
             user_id = #{userId},
             create_time = #{createTime},
             update_time = #{updateTime}
-        where id = #{id}
+        where article_id = #{articleId}
     </update>
 
     <delete id="deleteArticle" parameterType="Long">
-        delete from article where id = #{id}
+        delete from article where article_id = #{id}
     </delete>
 </mapper>

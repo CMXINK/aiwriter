@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.dawn.aiwriter.mapper.SummaryMapper">
+<mapper namespace="com.dawn.aiwriter.mapper.TitleMapper">
     <resultMap type="com.dawn.aiwriter.entity.Title" id="titleResult">
         <result property="titleId"    column="title_id"    />
         <result property="title"    column="title"    />
@@ -13,30 +13,44 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
-    <select id="selectSummaryList" parameterType="com.dawn.aiwriter.entity.Article" resultMap="titleResult">
+    <select id="selectTitleList" parameterType="com.dawn.aiwriter.entity.Article" resultMap="titleResult">
         select title_id,title,article_id,status,del_flag,create_time,update_time
         from title
         where article_id = #{articleId}
     </select>
 
-    <insert id="insertSummary">
+    <insert id="insertTitle" parameterType="com.dawn.aiwriter.entity.Title">
         insert into title(
-                title_id
-                title
-                article_id
-                status
-                del_flag
-                create_time
+                title,
+                article_id,
+                status,
+                del_flag,
+                create_time,
                 update_time
                 )
         values (
-                #{titleId}
-                #{title}
-                #{articleId}
-                #{status}
-                #{delFlag}
-                #{createTime}
+                #{title},
+                #{articleId},
+                #{status},
+                #{delFlag},
+                #{createTime},
                 #{updateTime}
                        )
     </insert>
+
+    <update id="updateTitle" parameterType="com.dawn.aiwriter.entity.Title">
+        update title set
+                title = #{title},
+                article_id = #{articleId},
+                status = #{status},
+                del_flag = #{delFlag},
+                create_time = #{createTime},
+                update_time = #{updateTime}
+        where title_id = #{titleId}
+    </update>
+
+    <delete id="deleteTitle">
+        delete from title
+        where article_id = #{id}
+    </delete>
 </mapper>

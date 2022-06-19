@@ -1,7 +1,9 @@
 package com.dawn.aiwriter.service;
 
 import com.dawn.aiwriter.entity.Article;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,10 +23,7 @@ public interface IArticleService {
 
     Article selectArticleById(Long id);
 
-    /**
-     * 计算文章字数
-     * @param article
-     * @return 字数
-     */
-    Integer countWords(Article article);
+    String importArticle(MultipartFile file);
+
+    int exportArticle(Article article, HttpServletResponse response) throws Exception;
 }

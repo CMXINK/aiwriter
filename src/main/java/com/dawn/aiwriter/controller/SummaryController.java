@@ -2,12 +2,10 @@ package com.dawn.aiwriter.controller;
 
 import com.dawn.aiwriter.entity.Article;
 import com.dawn.aiwriter.entity.Summary;
+import com.dawn.aiwriter.entity.Title;
 import com.dawn.aiwriter.service.ISummaryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +25,15 @@ public class SummaryController {
         Integer result = summaryService.insertSummary(summary);
         return result;
     }
-
+    @PostMapping("/update")
+    public int updateSummary(Summary summary){
+        Integer result = summaryService.updateSummary(summary);
+        return result;
+    }
+    @DeleteMapping("/{id}")
+    public int deleteSummary(@PathVariable Long id){
+        Integer result = summaryService.deleteSummary(id);
+        return result;
+    }
 
 }

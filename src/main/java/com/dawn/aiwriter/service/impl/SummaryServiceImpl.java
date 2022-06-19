@@ -24,4 +24,14 @@ public class SummaryServiceImpl implements ISummaryService{
     public Integer insertSummary(Summary summary) {
         return summaryMapper.insertSummary(summary);
     }
+
+    @Override
+    public Integer updateSummary(Summary summary) {
+        return summaryMapper.updateSummary(summary);
+    }
+
+    @Override
+    public Integer deleteSummary(Long id) {
+        return summaryMapper.deleteSummary(id);
+    }
 }

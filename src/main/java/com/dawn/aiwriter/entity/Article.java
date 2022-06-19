@@ -28,7 +28,7 @@ public class Article {
     private String articleBody;
 
     /**文章字数*/
-    private String wordNum;
+    private Integer wordNum;
 
     /**用户id*/
     private Long userId;

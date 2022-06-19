@@ -4,8 +4,16 @@ import com.dawn.aiwriter.entity.Article;
 import com.dawn.aiwriter.service.IArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.processing.Filer;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @description: 文件的新增、删除、上传、下载、查看等处理
@@ -56,4 +64,25 @@ public class ArticleController{
         return result;
     }
 
+    /**
+     * @description: 文章下载
+     * @param: null
+     * @return:
+     */
+    @GetMapping("/export")
+    public int exportArticle(Article article, HttpServletResponse response) throws Exception {
+        int result = articleService.exportArticle(article,response);
+        return result;
+    }
+
+    /**
+     * @description: 文章上传
+     * @param: null
+     * @return:
+     */
+    @PostMapping("/import")
+    public String importArticle(@RequestParam("file") MultipartFile file){
+        String result = articleService.importArticle(file);
+        return result;
+    }
 }

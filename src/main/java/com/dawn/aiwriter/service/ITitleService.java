@@ -6,7 +6,12 @@ import com.dawn.aiwriter.entity.Title;
 import java.util.List;
 
 public interface ITitleService {
+
     public List<Title> selectTitleList(Article article);
 
-    Integer insertTitle(Title title);
+    public Integer insertTitle(Title title);
+
+    Integer updateTitle(Title title);
+
+    Integer deleteTitle(Long id);
 }

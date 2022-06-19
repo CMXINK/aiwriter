@@ -21,19 +21,35 @@
 
     <insert id="insertSummary">
         insert into summary(
-            summary
-            article_id
-            status
-            del_flag
-            create_time
+            summary,
+            article_id,
+            status,
+            del_flag,
+            create_time,
             update_time
                 ) values (
-                    #{summary}
-                    #{articleId}
-                    #{status}
-                    #{delFlag}
-                    #{createTime}
+                    #{summary},
+                    #{articleId},
+                    #{status},
+                    #{delFlag},
+                    #{createTime},
                     #{updateTime}
                     )
     </insert>
+
+    <update id="updateSummary" parameterType="com.dawn.aiwriter.entity.Summary">
+        update summary set
+            summary = #{summary},
+            article_id = #{articleId},
+            status = #{status},
+            del_flag = #{delFlag},
+            create_time = #{createTime},
+            update_time =#{updateTime}
+        where summary_id = #{summaryId}
+    </update>
+
+    <delete id="deleteSummary">
+        delete from summary
+        where article_id = #{id}
+    </delete>
 </mapper>

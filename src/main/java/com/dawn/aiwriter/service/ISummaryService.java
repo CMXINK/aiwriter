@@ -9,4 +9,8 @@ public interface ISummaryService {
     public List<Summary> selectSummaryList(Article article);
 
     Integer insertSummary(Summary summary);
+
+    Integer updateSummary(Summary summary);
+
+    Integer deleteSummary(Long id);
 }

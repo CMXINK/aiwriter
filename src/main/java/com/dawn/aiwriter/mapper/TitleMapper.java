@@ -13,4 +13,8 @@ public interface TitleMapper {
     public List<Title> selectTitleList(Article article);
 
     public Integer insertTitle(Title title);
+
+    Integer updateTitle(Title title);
+
+    Integer deleteTitle(Long id);
 }
