@@ -4,10 +4,10 @@
     <el-collapse accordion>
       <el-collapse-item class="currentItem">
         <template #title>
-          <div class="title">{{ currentItem.title }}</div>
+          <div class="title">{{ currentTitle(currentArticle) }}</div>
           <div style="position: absolute; right: 50px; color: #ff7a7a">使用中</div>
         </template>
-        <div class="itemContent" v-for="(item, index) in currentItem.data" :key="index">{{ item }}</div>
+        <div class="itemContent" v-for="(item, index) in currentArticle.summerys" :key="index">{{ item }}</div>
 
         <!-- 触摸事的标签的提示 -->
         <div class="icons">
@@ -21,7 +21,7 @@
           </el-popover>
           <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
             <template #reference>
-              <el-icon :size="25" color="gray" @click="resetCurrentItem"><Refresh /></el-icon>
+              <el-icon :size="25" color="gray" @click="editCurentArticle({ titles: firVersion[0].titles })"><Refresh /></el-icon>
             </template>
             <template #default>
               <div class="content">初始版本</div>
@@ -31,9 +31,9 @@
       </el-collapse-item>
       <!-- 遮盖层内容dialog -->
       <el-dialog v-model="dialogEditVisible" draggable title="编辑内容" center>
-        <el-input v-model="tempCurrentItem.title" autosize type="textarea" placeholder="Please input" resize="none" />
-        <div class="Editdata" v-for="(item, index) in tempCurrentItem.data" :key="index" style="margin: 30px 0">
-          <el-input v-model="tempCurrentItem.data[index]" :autosize="{ minRows: 3, maxRows: 20 }" type="textarea" placeholder="Please input" resize="none" />
+        <el-input v-model="tempCurrentTitle" autosize type="textarea" placeholder="Please input" resize="none" />
+        <div class="Editdata" v-for="(item, index) in tempCurrentItem.summerys" :key="index" style="margin: 30px 0">
+          <el-input v-model="tempCurrentItem.summerys[index]" :autosize="{ minRows: 3, maxRows: 20 }" type="textarea" placeholder="Please input" resize="none" />
         </div>
 
         <template #footer>
@@ -46,14 +46,34 @@
     </el-collapse>
     <!--  -->
     <el-collapse accordion>
-      <el-collapse-item :name="index" v-for="(item, index) in items" :key="index" v-show="item.show" :class="item.class">
+      <el-collapse-item :name="index" v-for="item in currentArticle.titles" :key="item.titleId" v-show="item.delFlag" :class="item.class" class="item">
         <template #title>
           <div class="title">{{ item.title }}</div>
-        </template>
-        <div class="itemContent" v-for="(item_data, index) in item.data" :key="index">{{ item_data }}</div>
+          <div class="icons item-icon">
+            <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
+              <template #reference>
+                <el-icon :size="25" color="gray" @click="setCurrentItem(item)"><DocumentChecked /></el-icon>
+              </template>
+              <template #default>
+                <div class="content">应用内容</div>
+              </template>
+            </el-popover>
 
-        <!-- 触摸事的标签的提示 -->
-        <div class="icons">
+            <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
+              <template #reference>
+                <el-icon :size="25" color="gray" @click="removeItem(item)"><DocumentDelete /></el-icon>
+              </template>
+              <template #default>
+                <div class="content">忽略内容</div>
+              </template>
+            </el-popover>
+          </div>
+        </template>
+        <!-- 当品题目和简介一起时的简介内容 -->
+        <!-- <div class="itemContent" v-for="(item_data, index) in item.data" :key="index">{{ item_data }}</div> -->
+
+        <!-- 当题目和简介在一起时的触摸事件的标签的提示 -->
+        <!-- <div class="icons">
           <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
             <template #reference>
               <el-icon :size="25" color="gray" @click="setCurrentItem(item)"><DocumentChecked /></el-icon>
@@ -71,25 +91,19 @@
               <div class="content">忽略内容</div>
             </template>
           </el-popover>
-        </div>
+        </div> -->
       </el-collapse-item>
     </el-collapse>
   </div>
 </template>
 
 <script>
-import { watch } from 'vue-demi'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 export default {
   name: 'Query',
   data() {
     return {
       //  currentItem和Items里的data需要一个段落标识来分段或data本身就是数组, 每一段为一个数组
-      firVersion: {
-        id: 1,
-        show: true,
-        title: '当前的标题',
-        data: ['CurrentText: Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;']
-      },
       currentItem: {
         id: 1,
         show: true,
@@ -135,22 +149,39 @@ export default {
         }
       ],
       tempCurrentItem: {},
+      tempCurrentTitle: '',
       dialogEditVisible: false
     }
   },
+  computed: {
+    ...mapState(['currentArticle', 'currentTitleIndex']),
+    ...mapGetters(['firVersion', 'currentTitle'])
+  },
   watch: {
-    currentItem: {
-      deep: true, // 开启深度监视,即如果ishot对象,可以监视ishot内部的值的变化
+    currentArticle: {
+      deep: true, // 开启深度监视
       immediate: true, // 在一开始时调用一下handler
       handler() {
-        this.tempCurrentItem = JSON.parse(JSON.stringify(this.currentItem))
+        this.tempCurrentItem = JSON.parse(JSON.stringify(this.currentArticle))
+        if (this.currentTitleIndex) {
+          console.log(this.currentTitleIndex)
+          this.tempCurrentTitle = this.tempCurrentItem.titles[this.currentTitleIndex].title
+        } else {
+          this.tempCurrentTitle = ''
+        }
       }
     }
   },
   methods: {
+    ...mapMutations({ editCurentArticle: 'CURRENT_ARTICLE_SETTER' }),
     updateCurrentItem() {
       this.dialogEditVisible = false
-      this.currentItem = this.tempCurrentItem
+      if (this.currentTitleIndex) {
+        this.tempCurrentItem.titles[this.currentTitleIndex].title = this.tempCurrentTitle
+      } else {
+        this.tempCurrentItem.titles = this.tempCurrentTitle
+      }
+      this.editCurentArticle(this.tempCurrentItem)
     },
     removeItem(item) {
       item.class = 'animate__animated animate__bounce animate__backOutUp'
@@ -166,11 +197,13 @@ export default {
     setCurrentItem(item) {
       this.currentItem.data = item.data
       this.currentItem.title = item.title
-    },
-    resetCurrentItem() {
-      console.log(this.currentItem, this.firVersion)
-      this.currentItem = JSON.parse(JSON.stringify(this.firVersion))
     }
+  },
+  beforeCreate() {
+    this.$store.state.currentTitleIndex = null
+  },
+  mounted() {
+    console.log('挂载完毕')
   }
 }
 </script>
@@ -214,7 +247,7 @@ export default {
 .el-collapse-item .icons .el-icon:hover {
   color: #0477d4;
 }
-.is-active .title {
+.currentItem .is-active .title {
   color: #2693ec;
 }
 .el-popover.my-popover {
@@ -267,5 +300,19 @@ export default {
 .dialog-footer button:last-child {
   position: absolute;
   left: 55%;
+}
+
+.item .el-collapse-item__arrow {
+  font-size: 0px !important;
+}
+.item {
+  position: relative;
+}
+.item .item-icon {
+  position: absolute;
+  right: 0px;
+}
+.item .el-collapse-item__content {
+  padding: 0px !important;
 }
 </style>

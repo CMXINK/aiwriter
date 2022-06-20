@@ -1,6 +1,6 @@
 <template>
   <el-row class="desk" :gutter="20">
-    <el-col :span="7" style="margin-top: 20px; margin-left: 10px">
+    <el-col :span="7" style="margin-top: 20px; margin-left: 10px" @click="addArticle">
       <el-card shadow="hover">
         <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
           <router-link to="/dashboard">
@@ -15,84 +15,59 @@
         </el-upload>
       </el-card>
     </el-col>
-    <el-col :span="4" style="margin-top: 20px" v-for="(item, index) in articles" :key="index">
-      <el-card shadow="hover">
-        <div class="successShow" style="">
-          <div :title="item.title" class="textDescriptionTitle">{{ item.title }}</div>
-          <div class="textDescription">
-            <img src="../../assets/img/number.png" alt="" style="vertical-align: middle; height: 16px; width: 16px; margin-right: 8px" />
-            <span>字数：{{ item.fontNum }}</span>
-          </div>
-          <div class="textDescription">
-            <img src="../../assets/img/time.png" alt="" style="vertical-align: middle; height: 16px; width: 16px; margin-right: 5px" />
-            <span
-              >日期：<span class="uploadTime">{{ item.date }}</span>
-            </span>
-          </div>
-          <!--           下面的打印，下载，删除等等图标-->
-          <div class="bottomButtons">
-            <!--            下载-->
-            <div class="download">
-              <img src="../../assets/img/download.svg" alt="" />
+    <el-col :span="4" style="margin-top: 20px" v-for="item in articleList" :key="item.articleId">
+      <router-link to="/dashboard" @click="editArticle(item)">
+        <el-card shadow="hover">
+          <div class="successShow" style="">
+            <div class="textDescriptionTitle">{{ currentTitle(item) }}</div>
+            <div class="textDescription">
+              <img src="../../assets/img/number.png" alt="" style="vertical-align: middle; height: 16px; width: 16px; margin-right: 8px" />
+              <span>字数：{{ item.wordNum ? item.wordNum : 0 }}</span>
             </div>
-            <!--            删除-->
-            <div class="delect">
-              <img src="../../assets/img/delect.svg" alt="" />
+            <div class="textDescription">
+              <img src="../../assets/img/time.png" alt="" style="vertical-align: middle; height: 16px; width: 16px; margin-right: 5px" />
+              <span
+                >日期：<span class="uploadTime">{{ item.date }}</span>
+              </span>
+            </div>
+            <!--           下面的打印，下载，删除等等图标-->
+            <div class="bottomButtons">
+              <!--            下载-->
+              <div class="download">
+                <img src="../../assets/img/download.svg" alt="" />
+              </div>
+              <!--            删除-->
+              <div class="delect" @click.prevent="delArticle(item.articleId)">
+                <img src="../../assets/img/delect.svg" alt="" />
+              </div>
             </div>
           </div>
-        </div>
-      </el-card>
+        </el-card>
+      </router-link>
     </el-col>
   </el-row>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 export default {
   name: 'Desk',
   data() {
-    return {
-      //  暂时没有API接口, 用list代替
-      articles: [
-        {
-          id: 1,
-          title: '范文——三国演义',
-          fontNum: 393,
-          date: '2019-11-12'
-        },
-        {
-          id: 2,
-          title: '范文——三国演义',
-          fontNum: 393,
-          date: '2019-11-12'
-        },
-        {
-          id: 3,
-          title: '范文——三国演义',
-          fontNum: 393,
-          date: '2019-11-12'
-        },
-        {
-          id: 4,
-          title: '范文——三国演义',
-          fontNum: 393,
-          date: '2019-11-12'
-        }
-      ]
-    }
+    return {}
   },
-  mounted() {
-    // this.getArticles()
+  created() {
+    this.$http.get('/article/list').then(res => {
+      this.$store.state.articleList = res.data
+    })
+  },
+  computed: {
+    ...mapState(['articleList']),
+    ...mapGetters(['currentTitle'])
   },
   methods: {
-    //获得文章的详细信息
-    //   getArticles(){
-    //     axios.get('/articles/list').then(
-    //         ({data})=>{
-    //           console.log("成功获取到数据",data);
-    //           this.articles = data;
-    //         }
-    //     )
-    //   }
+    // 方法来自store
+    ...mapActions(['delArticle', 'addArticle']),
+    ...mapMutations({ editArticle: 'CURRENT_ARTICLE_SETTER' })
   }
 }
 </script>
@@ -141,5 +116,8 @@ export default {
 }
 .delect {
   display: inline;
+}
+a {
+  text-decoration: none;
 }
 </style>
