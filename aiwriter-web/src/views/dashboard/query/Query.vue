@@ -21,7 +21,7 @@
           </el-popover>
           <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
             <template #reference>
-              <el-icon :size="25" color="gray" @click="editCurentArticle({ titles: firVersion[0].titles })"><Refresh /></el-icon>
+              <el-icon :size="25" color="gray" @click="resetTitle"><Refresh /></el-icon>
             </template>
             <template #default>
               <div class="content">初始版本</div>
@@ -46,7 +46,7 @@
     </el-collapse>
     <!--  -->
     <el-collapse accordion>
-      <el-collapse-item :name="index" v-for="item in currentArticle.titles" :key="item.titleId" v-show="item.delFlag" :class="item.class" class="item">
+      <el-collapse-item :name="index" v-for="(item, index) in titleList" :key="item.titleId" v-show="item.delFlag" :class="item.class" class="item">
         <template #title>
           <div class="title">{{ item.title }}</div>
           <div class="icons item-icon">
@@ -61,7 +61,7 @@
 
             <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
               <template #reference>
-                <el-icon :size="25" color="gray" @click="removeItem(item)"><DocumentDelete /></el-icon>
+                <el-icon :size="25" color="gray" @click="removeItem(item, index)"><DocumentDelete /></el-icon>
               </template>
               <template #default>
                 <div class="content">忽略内容</div>
@@ -104,67 +104,24 @@ export default {
   data() {
     return {
       //  currentItem和Items里的data需要一个段落标识来分段或data本身就是数组, 每一段为一个数组
-      currentItem: {
-        id: 1,
-        show: true,
-        title: '当前的标题',
-        data: ['CurrentText: Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;']
-      },
-      items: [
-        {
-          id: 1,
-          show: true,
-          title: '这是简述One',
-          data: [
-            'ItemsDataOne: Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;',
-            'Consistent within interface: all elements should be consistent, such as: design style, icons and texts, position of elements, etc.'
-          ]
-        },
-        {
-          id: 2,
-          show: true,
-          title: '这是简述Two',
-          data: [
-            'ItemsDataTwo: Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;',
-            'Consistent within interface: all elements should be consistent, such as: design style, icons and texts, position of elements, etc.'
-          ]
-        },
-        {
-          id: 3,
-          show: true,
-          title: '这是简述Three',
-          data: [
-            'ItemsDataThree: Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;',
-            'Consistent within interface: all elements should be consistent, such as: design style, icons and texts, position of elements, etc.'
-          ]
-        },
-        {
-          id: 4,
-          show: true,
-          title: '这是简述Four',
-          data: [
-            'ItemsDataFour: Consistent with real life: in line with the process and logic of real life, and comply with languages and habits that the users are used to;',
-            'Consistent within interface: all elements should be consistent, such as: design style, icons and texts, position of elements, etc.'
-          ]
-        }
-      ],
+      titleList: [],
       tempCurrentItem: {},
       tempCurrentTitle: '',
       dialogEditVisible: false
     }
   },
   computed: {
-    ...mapState(['currentArticle', 'currentTitleIndex']),
-    ...mapGetters(['firVersion', 'currentTitle'])
+    ...mapState(['currentArticle', 'currentTitleIndex', 'articleList']),
+    ...mapGetters(['currentTitle', 'firVersion'])
   },
   watch: {
     currentArticle: {
       deep: true, // 开启深度监视
       immediate: true, // 在一开始时调用一下handler
       handler() {
+        console.log('这是articleList', this.articleList, 'ddd')
         this.tempCurrentItem = JSON.parse(JSON.stringify(this.currentArticle))
         if (this.currentTitleIndex) {
-          console.log(this.currentTitleIndex)
           this.tempCurrentTitle = this.tempCurrentItem.titles[this.currentTitleIndex].title
         } else {
           this.tempCurrentTitle = ''
@@ -183,27 +140,44 @@ export default {
       }
       this.editCurentArticle(this.tempCurrentItem)
     },
-    removeItem(item) {
+    removeItem(item, index) {
       item.class = 'animate__animated animate__bounce animate__backOutUp'
-      this.item = item
       setTimeout(() => {
-        this.item.show = false
+        this.titleList[index].delFlag = false
       }, 650)
+    },
+
+    resetTitle() {
+      if (this.currentTitleIndex) {
+        this.$store.state.currentArticle.titles[this.currentTitleIndex].title = window.localStorage.getItem('firVersion_title')
+      } else {
+        this.$store.state.currentArticle.titles = [{ title: '未选则标题' }]
+      }
     },
     collapseChange(val) {
       //  当前激活的item
       console.log('currentCollapseItem==>:', val)
     },
     setCurrentItem(item) {
-      this.currentItem.data = item.data
-      this.currentItem.title = item.title
+      if (this.currentTitleIndex) {
+        this.$store.state.currentArticle.titles[this.currentTitleIndex].title = item.title
+      } else {
+        item.status = '1'
+        this.currentItem.titles = [item]
+      }
     }
   },
   beforeCreate() {
     this.$store.state.currentTitleIndex = null
   },
+  beforeMount() {},
   mounted() {
-    console.log('挂载完毕')
+    this.titleList = this.currentTitleIndex ? JSON.parse(JSON.stringify(this.currentArticle)).titles : []
+    if (this.firVersion.length > 0 && this.currentTitleIndex) {
+      window.localStorage.setItem('firVersion_title', this.currentTitle(this.currentArticle))
+    } else {
+      window.localStorage.setItem('firVersion_title', '未选则标题')
+    }
   }
 }
 </script>

@@ -60,11 +60,9 @@ export default createStore({
   },
   getters: {
     firVersion(state) {
-      return state.articleList.filter(item => {
-        if (item.articleId === state.currentArticle.articleId) {
-          return item
-        }
-      })
+      let data = state.articleList.filter(item =>
+        item.articleId === state.currentArticle.articleId)
+      return (data.length > 0 && state.currentTitleIndex) ? data : { titles: [{ title: "未选择标题" }] }
     },
     currentTitle(state) {
       return function (article) {
