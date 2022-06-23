@@ -14,6 +14,7 @@
                 }
               }"
               active-class="tab-active"
+              replace
               >获取标题</router-link
             >
           </el-col>
@@ -26,6 +27,7 @@
                 }
               }"
               @click.prevent="queryData"
+              replace
               active-class="tab-active"
               >获取简介</router-link
             >
@@ -75,6 +77,11 @@ export default {
         loading.close()
         this.resData = res.data
       })
+    },
+    // 返回到上一页
+    goBack() {
+      console.log(this.$router)
+      this.$router.back()
     }
   }
 }

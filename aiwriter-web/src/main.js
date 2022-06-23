@@ -4,9 +4,9 @@ import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import http from './utils/http'
 import 'animate.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import http from '@/utils/http'
 
 
 
