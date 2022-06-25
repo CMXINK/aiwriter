@@ -1,5 +1,6 @@
 package com.dawn.aiwriter.controller;
 
+import com.dawn.aiwriter.common.utils.HttpUtils;
 import com.dawn.aiwriter.entity.Article;
 import com.dawn.aiwriter.service.IArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +43,19 @@ public class ArticleController{
     @GetMapping(value = "/{id}")
     public Article getArticleById(@PathVariable("id")Long id) {
         Article result = articleService.selectArticleById(id);
-
         return result;
     }
 
+    /**
+     * @description: 新增文章 TODO 没有进行插入失败时判断。
+     * @param: Article
+     * @return: 文章id
+     */
     @PostMapping("/add")
-    public int addArticle(Article article){
+    public Long addArticle(Article article){
         Integer result = articleService.insertArticle(article);
-        return result;
+        Long articleId = article.getArticleId();
+        return articleId;
     }
 
     @PostMapping("/update")

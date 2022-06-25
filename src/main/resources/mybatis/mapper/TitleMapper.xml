@@ -51,6 +51,6 @@
 
     <delete id="deleteTitle">
         delete from title
-        where article_id = #{id}
+        where article_id = #{id} and status != '1'
     </delete>
 </mapper>

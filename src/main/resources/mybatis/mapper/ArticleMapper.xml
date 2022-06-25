@@ -49,7 +49,7 @@
         where a.article_id = #{id}
     </select>
 
-    <insert id="insertArticle">
+    <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId">
         insert into article(
             article_body,
             word_num,

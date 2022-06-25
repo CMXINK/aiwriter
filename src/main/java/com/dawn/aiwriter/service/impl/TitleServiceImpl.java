@@ -20,24 +20,7 @@ public class TitleServiceImpl implements ITitleService {
 
     @Override
     public List<Title> selectTitleList(Article article) {
-        //1、给模型传入正文
-        try {
-            String articleBody = article.getArticleBody();
-            String[] args1 = new String[] { "python", "D:\\test2.py", articleBody};
-            Process pr=Runtime.getRuntime().exec(args1);
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    pr.getInputStream(),"gb2312"));
-            String line;
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
-            }
-            in.close();
-            pr.waitFor();
-            System.out.println("end");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+
         return titleMapper.selectTitleList(article);
     }
 
