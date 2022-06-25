@@ -15,14 +15,16 @@ export default createStore({
       })
         .then(res => context.commit('CURRENT_ARTICLE_SETTER',
           {
-            articleId: res.data,
-            titles: [],
-            summarys: [],
-            articleBody: '<p>...请输入文章内容</p>',
-            wordNum: '',
-            userId: null,
-            createTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
-            updateTime: dayjs().format('YYYY-MM-DD HH:mm:ss')
+            ...{
+              articleId: res.data,
+              titles: [],
+              summarys: [],
+              articleBody: '<p>...请输入文章内容</p>',
+              wordNum: '',
+              userId: null,
+              createTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+              updateTime: dayjs().format('YYYY-MM-DD HH:mm:ss')
+            }, val
           }
         ))
     },
