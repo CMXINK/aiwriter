@@ -1,16 +1,17 @@
 import { createStore } from 'vuex'
 import http from '@/utils/http'
+import dayjs from 'dayjs'
 
 export default createStore({
   actions: {
     //  新建文章
-    addArticle(context) {
+    addArticle(context, val) {
       http.post('/article/add', {
         articleId: 4,
-        articleBody: '这是三体正文',
+        articleBody: '<p>...请输入文章内容</p>',
         userId: null,
-        createTime: new Date(),
-        updateTime: new Date()
+        createTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        updateTime: dayjs().format('YYYY-MM-DD HH:mm:ss')
       })
         .then(res => context.commit('CURRENT_ARTICLE_SETTER',
           {
@@ -20,8 +21,8 @@ export default createStore({
             articleBody: '<p>...请输入文章内容</p>',
             wordNum: '',
             userId: null,
-            createTime: new Date(),
-            updateTime: new Date()
+            createTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+            updateTime: dayjs().format('YYYY-MM-DD HH:mm:ss')
           }
         ))
     },
@@ -41,11 +42,44 @@ export default createStore({
     CURRENT_ARTICLE_SETTER(state, value) {
       // 根据value的数据替换currentArticle 的数据
       state.currentArticle = { ...state.currentArticle, ...value }
+    },
+    UPDATE_SHOWLIST(state, data) {
+      state.showList = data
+    },
+    // 隐藏某一列表项
+    HIDE_LISTITEM(state, index) {
+      state.showList[index].delFlag = false
+    },
+    SWITCH_IS_SHOWING_TITLE(state, val) {
+      state.isShowingTitle = val
+    },
+    //  整体控制list 项的显示与隐藏, 以便加载动画
+    SWITCH_IS_LIST_All(state, val) {
+      state.isListAll = val
+    },
+    RESER_DATA(state) {
+      //  组件销毁清空数据
+      state.currentArticle = {
+        articleId: '',
+        titles: [],
+        summarys: [],
+        articleBody: '',
+        wordNum: '',
+        userId: null,
+        createTime: '',
+        updateTime: ''
+      },
+        state.isShowingTitle = true,
+        state.currentTitleIndex = '',
+        this.showList = [],
+        // 列表展示项的隐藏与显示
+        this.isListAll = true
     }
   },
   state: {
-    articleList: [
-    ],
+    // 文章列表
+    articleList: [],
+    // 当前文章所有状态, 实时更新
     currentArticle: {
       articleId: '',
       titles: [],
@@ -56,14 +90,23 @@ export default createStore({
       createTime: '',
       updateTime: ''
     },
-    currentTitleIndex: ''
+    // 当前展示的是否是标题
+    isShowingTitle: true,
+    // 标题中当前选中的列表的index
+    currentTitleIndex: '',
+    // 展示的数据列表
+    showList: [],
+    // 列表展示项的隐藏与显示
+    isListAll: true
   },
   getters: {
+    // 第一次选择文章后编辑前的文章状态
     firVersion(state) {
       let data = state.articleList.filter(item =>
         item.articleId === state.currentArticle.articleId)
       return (data.length > 0 && state.currentTitleIndex) ? data : { titles: [{ title: "未选择标题" }] }
     },
+    // 当前标题
     currentTitle(state) {
       return function (article) {
         let data = article.titles.filter((item, index) => {

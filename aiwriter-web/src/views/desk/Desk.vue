@@ -2,7 +2,7 @@
   <el-row class="desk" :gutter="20">
     <el-col :span="7" style="margin-top: 20px; margin-left: 10px" @click="addArticle">
       <el-card shadow="hover">
-        <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/">
+        <el-upload class="upload-demo" drag action="/article/import" accept=".docx" :show-file-list="false" :on-success="(response, uploadFile, uploadFiles) => sueecssUpLoad(response, uploadFile, uploadFiles)">
           <router-link to="/dashboard">
             <img src="../../assets/img/upload.png" alt="" />
             <div style="height: 35px; font-size: 16px">
@@ -33,7 +33,7 @@
             <!--           下面的打印，下载，删除等等图标-->
             <div class="bottomButtons">
               <!--            下载-->
-              <div class="download">
+              <div class="download" @click.prevent="download(item.articleId)">
                 <img src="../../assets/img/download.svg" alt="" />
               </div>
               <!--            删除-->
@@ -67,7 +67,17 @@ export default {
   methods: {
     // 方法来自store
     ...mapActions(['delArticle', 'addArticle']),
-    ...mapMutations({ editArticle: 'CURRENT_ARTICLE_SETTER' })
+    ...mapMutations({ editArticle: 'CURRENT_ARTICLE_SETTER' }),
+    // 文件上传成功的回调
+    sueecssUpLoad(response) {
+      this.addArticle({ articleBody: response })
+      this.$router.push({ path: '/dashboard' })
+    },
+
+    download(id) {
+      // 下载文件
+      window.location.href = `http://114.55.56.15:8886/article/export?articleId=${id}`
+    }
   }
 }
 </script>

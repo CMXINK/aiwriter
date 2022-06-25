@@ -7,13 +7,14 @@
           <div class="title">{{ currentTitle(currentArticle) }}</div>
           <div style="position: absolute; right: 50px; color: #ff7a7a">使用中</div>
         </template>
-        <div class="itemContent" v-for="(item, index) in currentArticle.summerys" :key="index">{{ item }}</div>
-
+        <!-- 由于传过来的summary并非是数组格式，即不具备分段条件, 故不能分段处理， 只能一行处理 -->
+        <!-- <div class="itemContent" v-for="(item, index) in currentArticle.summarys" :key="index">{{ item }}</div> -->
+        <div class="itemContent">{{ currentArticle.summarys ? (currentArticle.summarys.summary ? currentArticle.summarys.summary : '未选则简介') : '未选则简介' }}</div>
         <!-- 触摸事的标签的提示 -->
         <div class="icons">
           <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
             <template #reference>
-              <el-icon :size="25" color="gray" @click="dialogEditVisible = true"><EditPen /></el-icon>
+              <el-icon :size="25" color="gray" @click.prevent="dialogEditVisible = true"><EditPen /></el-icon>
             </template>
             <template #default>
               <div class="content">编辑内容</div>
@@ -21,7 +22,7 @@
           </el-popover>
           <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
             <template #reference>
-              <el-icon :size="25" color="gray" @click="resetTitle"><Refresh /></el-icon>
+              <el-icon :size="25" color="gray" @click.prevent="resetTitle"><Refresh /></el-icon>
             </template>
             <template #default>
               <div class="content">初始版本</div>
@@ -32,10 +33,12 @@
       <!-- 遮盖层内容dialog -->
       <el-dialog v-model="dialogEditVisible" draggable title="编辑内容" center>
         <el-input v-model="tempCurrentTitle" autosize type="textarea" placeholder="Please input" resize="none" />
-        <div class="Editdata" v-for="(item, index) in tempCurrentItem.summerys" :key="index" style="margin: 30px 0">
-          <el-input v-model="tempCurrentItem.summerys[index]" :autosize="{ minRows: 3, maxRows: 20 }" type="textarea" placeholder="Please input" resize="none" />
+        <!-- <div class="Editdata" v-for="(item, index) in tempSummer.summary" :key="index" style="margin: 30px 0">
+        <el-input v-model="item[index]" :autosize="{ minRows: 3, maxRows: 40 }" type="textarea" placeholder="Please input" resize="none" />
+        </div> -->
+        <div class="Editdata" style="margin: 30px 0">
+          <el-input v-model="tempSummer.summary" :autosize="{ minRows: 3, maxRows: 40 }" type="textarea" placeholder="Please input" resize="none" />
         </div>
-
         <template #footer>
           <el-row class="dialog-footer">
             <el-button @click="dialogEditVisible = false">取消</el-button>
@@ -44,15 +47,43 @@
         </template>
       </el-dialog>
     </el-collapse>
-    <!--  -->
-    <el-collapse accordion>
-      <el-collapse-item :name="index" v-for="(item, index) in titleList" :key="item.titleId" v-show="item.delFlag" :class="item.class" class="item">
-        <template #title>
-          <div class="title">{{ item.title }}</div>
-          <div class="icons item-icon">
+    <!-- 列表展示项, 通过isShowingTitle判断是title还是summarys, 通过isListAll判断是否展示所有列表并根据状态加载动画 通过delFlag 判读当前项是否展示-->
+    <transition name="animate__animated animate__bounce" enter-active-class="animate__bounceInDown" leave-active-class="animate__bounceOutUp" appear>
+      <el-collapse accordion :class="isShowingTitle ? 'item' : ''" v-if="isListAll">
+        <el-collapse-item :name="index" v-for="(item, index) in showList" :key="index" v-show="item.delFlag" :class="item.class">
+          <template #title>
+            <div class="title">{{ isShowingTitle ? item.title : item.summary.slice(0, 12) }}</div>
+            <div class="icons item-icon" v-show="isShowingTitle">
+              <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
+                <template #reference>
+                  <el-icon :size="25" color="gray" @click.prevent="setCurrentItem(item)"><DocumentChecked /></el-icon>
+                </template>
+                <template #default>
+                  <div class="content">应用内容</div>
+                </template>
+              </el-popover>
+
+              <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
+                <template #reference>
+                  <el-icon :size="25" color="gray" @click.prevent="removeItem(item, index)"><DocumentDelete /></el-icon>
+                </template>
+                <template #default>
+                  <div class="content">忽略内容</div>
+                </template>
+              </el-popover>
+            </div>
+          </template>
+
+          <div class="itemContent" v-show="!isShowingTitle" v-for="(item, index) in item.summary" :key="index">{{ item_data }}</div>
+
+          <!-- 由于传过来的summary并非是数组格式，即不具备分段条件, 故不能分段处理， 只能一行处理 -->
+          <!-- <div class="itemContent" v-show="!isShowingTitle" v-for="(item, index) in item.summary" :key="index">{{ item_data }}</div> -->
+          <div class="itemContent">{{ item.summary }}</div>
+
+          <div class="icons" v-show="!isShowingTitle">
             <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
               <template #reference>
-                <el-icon :size="25" color="gray" @click="setCurrentItem(item)"><DocumentChecked /></el-icon>
+                <el-icon :size="25" color="gray" @click.prevent="setCurrentItem(item)"><DocumentChecked /></el-icon>
               </template>
               <template #default>
                 <div class="content">应用内容</div>
@@ -61,39 +92,16 @@
 
             <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
               <template #reference>
-                <el-icon :size="25" color="gray" @click="removeItem(item, index)"><DocumentDelete /></el-icon>
+                <el-icon :size="25" color="gray" @click.prevent="removeItem(item, index)"><DocumentDelete /></el-icon>
               </template>
               <template #default>
                 <div class="content">忽略内容</div>
               </template>
             </el-popover>
           </div>
-        </template>
-        <!-- 当品题目和简介一起时的简介内容 -->
-        <!-- <div class="itemContent" v-for="(item_data, index) in item.data" :key="index">{{ item_data }}</div> -->
-
-        <!-- 当题目和简介在一起时的触摸事件的标签的提示 -->
-        <!-- <div class="icons">
-          <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
-            <template #reference>
-              <el-icon :size="25" color="gray" @click="setCurrentItem(item)"><DocumentChecked /></el-icon>
-            </template>
-            <template #default>
-              <div class="content">应用内容</div>
-            </template>
-          </el-popover>
-
-          <el-popover placement="top-start" trigger="hover" popper-class="my-popover" :append-to-body="false">
-            <template #reference>
-              <el-icon :size="25" color="gray" @click="removeItem(item)"><DocumentDelete /></el-icon>
-            </template>
-            <template #default>
-              <div class="content">忽略内容</div>
-            </template>
-          </el-popover>
-        </div> -->
-      </el-collapse-item>
-    </el-collapse>
+        </el-collapse-item>
+      </el-collapse>
+    </transition>
   </div>
 </template>
 
@@ -104,14 +112,14 @@ export default {
   data() {
     return {
       //  currentItem和Items里的data需要一个段落标识来分段或data本身就是数组, 每一段为一个数组
-      titleList: [],
       tempCurrentItem: {},
       tempCurrentTitle: '',
+      tempSummer: {},
       dialogEditVisible: false
     }
   },
   computed: {
-    ...mapState(['currentArticle', 'currentTitleIndex', 'articleList']),
+    ...mapState(['currentArticle', 'currentTitleIndex', 'articleList', 'showList', 'isShowingTitle', 'isListAll']),
     ...mapGetters(['currentTitle', 'firVersion'])
   },
   watch: {
@@ -119,18 +127,19 @@ export default {
       deep: true, // 开启深度监视
       immediate: true, // 在一开始时调用一下handler
       handler() {
-        console.log('这是articleList', this.articleList, 'ddd')
         this.tempCurrentItem = JSON.parse(JSON.stringify(this.currentArticle))
         if (this.currentTitleIndex) {
           this.tempCurrentTitle = this.tempCurrentItem.titles[this.currentTitleIndex].title
         } else {
           this.tempCurrentTitle = ''
         }
+        this.tempSummer = JSON.parse(JSON.stringify(this.currentArticle.summarys ? this.currentArticle.summarys : { summary: '未选则简介' }))
       }
     }
   },
   methods: {
-    ...mapMutations({ editCurentArticle: 'CURRENT_ARTICLE_SETTER' }),
+    ...mapMutations({ editCurentArticle: 'CURRENT_ARTICLE_SETTER', setShowList: 'UPDATE_SHOWLIST', hideListItem: 'HIDE_LISTITEM' }),
+    // 自定义title和summary 保存时调用
     updateCurrentItem() {
       this.dialogEditVisible = false
       if (this.currentTitleIndex) {
@@ -139,31 +148,41 @@ export default {
         this.tempCurrentItem.titles = this.tempCurrentTitle
       }
       this.editCurentArticle(this.tempCurrentItem)
+      this.$store.state.currentArticle.summarys = this.tempSummer ? JSON.parse(JSON.stringify(this.tempSummer)) : ''
     },
     removeItem(item, index) {
       item.class = 'animate__animated animate__bounce animate__backOutUp'
       setTimeout(() => {
-        this.titleList[index].delFlag = false
+        this.hideListItem(index)
       }, 650)
     },
 
     resetTitle() {
-      if (this.currentTitleIndex) {
-        this.$store.state.currentArticle.titles[this.currentTitleIndex].title = window.localStorage.getItem('firVersion_title')
+      if (this.isShowingTitle) {
+        if (this.currentTitleIndex) {
+          this.$store.state.currentArticle.titles[this.currentTitleIndex].title = window.localStorage.getItem('firVersion_title')
+        } else {
+          this.$store.state.currentArticle.titles = [{ title: '未选则标题' }]
+        }
       } else {
-        this.$store.state.currentArticle.titles = [{ title: '未选则标题' }]
+        this.$store.state.currentArticle.summarys = window.localStorage.getItem('firVersion_title')
       }
     },
-    collapseChange(val) {
-      //  当前激活的item
-      console.log('currentCollapseItem==>:', val)
-    },
+    // 由后台数据更新时调用
     setCurrentItem(item) {
-      if (this.currentTitleIndex) {
-        this.$store.state.currentArticle.titles[this.currentTitleIndex].title = item.title
+      if (this.isShowingTitle) {
+        if (this.currentTitleIndex) {
+          this.$store.state.currentArticle.titles[this.currentTitleIndex].title = item.title
+        } else {
+          item.status = '1'
+          //
+          console.log('data:', item, 'data')
+          this.$store.state.currentArticle.titles = [item]
+          // this.currentItem.titles = [item]
+        }
       } else {
-        item.status = '1'
-        this.currentItem.titles = [item]
+        this.$store.state.currentArticle.summarys = item
+        this.tempSummer = JSON.parse(JSON.stringify(this.$store.state.currentArticle.summarys))
       }
     }
   },
@@ -172,11 +191,17 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    this.titleList = this.currentTitleIndex ? JSON.parse(JSON.stringify(this.currentArticle)).titles : []
+    this.setShowList(this.currentTitleIndex ? JSON.parse(JSON.stringify(this.currentArticle)).titles : [])
+    this.tempSummer = JSON.parse(JSON.stringify(this.$store.state.currentArticle.summarys ? this.$store.state.currentArticle.summarys : { summary: '未选则标题' }))
     if (this.firVersion.length > 0 && this.currentTitleIndex) {
       window.localStorage.setItem('firVersion_title', this.currentTitle(this.currentArticle))
     } else {
       window.localStorage.setItem('firVersion_title', '未选则标题')
+    }
+    if (this.currentTitle.summarys) {
+      window.localStorage.setItem('firVersion_summary', this.currentArticle.summarys.summmer)
+    } else {
+      window.localStorage.setItem('firVersion_summary', '未选择简介')
     }
   }
 }
